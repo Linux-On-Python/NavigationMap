@@ -1,0 +1,182 @@
+/*
+  map.css
+  -------
+  The map fills all remaining space beside the side panel. Leaflet will be
+  initialized into #map in js/map.js (next step) — for now this holds a
+  placeholder pattern so the layout can be reviewed before that wiring.
+  The nav banner overlay is the turn-by-turn instruction bar (Tails' voice
+  line shown as text + a mute toggle), hidden until navigation starts.
+*/
+
+.map-container {
+  flex: 1;
+  position: relative;
+  background: var(--map-bg);
+  /* placeholder grid pattern; removed once Leaflet tiles render here */
+  background-image: linear-gradient(var(--border) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, var(--border) 0.5px, transparent 0.5px);
+  background-size: 28px 28px;
+  min-height: 240px; /* keeps the map usable even in the stacked mobile layout */
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+/* Shown briefly while waiting for a geolocation fix, or if it's denied;
+   map.js removes this element entirely once real tiles are rendering. */
+.map-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  z-index: 5;
+}
+
+/* Turn-by-turn banner: shown only while a navigation is active.
+   js/navigation.js toggles the "is-active" class and fills in the text. */
+.nav-banner {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  right: var(--space-sm);
+  background: var(--panel);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: none;
+  align-items: center;
+  gap: var(--space-md);
+  z-index: 1000;
+}
+
+.nav-banner.is-active {
+  display: flex;
+}
+
+.nav-banner__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--color-orange);
+  color: #4a2a05;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-banner__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-banner__instruction {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-banner__street {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-banner__mute {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+}
+
+.map-zoom-controls {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  display: flex;
+  gap: var(--space-xs);
+  z-index: 10;
+}
+
+.map-zoom-controls .icon-button {
+  border-radius: var(--radius-sm);
+}
+
+.route-preview-actions {
+  position: absolute;
+  bottom: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  display: flex;
+  gap: var(--space-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 1000;
+}
+
+.route-preview-actions.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.start-trip-btn {
+  background: var(--color-orange);
+  color: #4a2a05;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-menu);
+}
+
+.cancel-preview-btn {
+  background: var(--panel);
+  color: var(--text);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-size: 13px;
+  box-shadow: var(--shadow-menu);
+}
+
+.cancel-preview-btn:hover {
+  background: var(--bg);
+}
+
+/* Leaflet's popup box otherwise ignores our theme entirely (hardcoded
+   white background from leaflet.css) — without this, popup text is
+   unreadable in dark mode (light text on a white box). */
+.leaflet-popup-content-wrapper {
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius-md);
+}
+
+.leaflet-popup-tip {
+  background: var(--panel);
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px;
+}
+
+.leaflet-popup-close-button {
+  color: var(--text-secondary) !important;
+}

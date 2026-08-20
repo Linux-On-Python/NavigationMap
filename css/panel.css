@@ -1,0 +1,300 @@
+/*
+  panel.css
+  ---------
+  The side panel: destination search, recent journeys, and saved places.
+  Sits beside the map on tablet/desktop/car screens, and below it on
+  narrow phone screens (see the @media rule in base.css).
+*/
+
+.side-panel {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-left: 0.5px solid var(--border);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .side-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 0.5px solid var(--border);
+    max-height: 45vh;
+  }
+}
+
+/* --- Search --- */
+.search-box {
+  position: relative;
+}
+
+.search-box__icon {
+  position: absolute;
+  left: var(--space-sm);
+  top: 10px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 10px 8px 32px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.search-box input:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 1px;
+}
+
+/* --- Shared section styles --- */
+.panel-section__title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.panel-section--bordered {
+  border-top: 0.5px solid var(--border);
+  padding-top: var(--space-md);
+}
+
+.empty-state {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: var(--space-sm) 0;
+}
+
+/* --- Recent journeys --- */
+.journey-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.journey-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.journey-item span {
+  color: var(--text);
+}
+
+.journey-item:hover {
+  background: var(--border);
+}
+
+/* --- Saved places --- */
+.place-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.place-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.place-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #4a2a05;
+}
+
+.place-badge--favorite {
+  background: var(--color-ring);
+  color: var(--color-ring-dark);
+}
+
+.place-badge--want-to-visit {
+  background: var(--color-blue);
+  color: var(--color-blue-dark);
+}
+
+.place-badge--category {
+  background: var(--color-orange);
+  color: #4a2a05;
+}
+
+.place-item__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.place-item__name {
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.place-item__meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.add-place-btn {
+  width: 100%;
+  margin-top: var(--space-sm);
+  font-size: 12px;
+  padding: 6px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.add-place-btn:hover {
+  background: var(--border);
+}
+
+/* --- Search results (appear after pressing Enter) --- */
+.search-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.search-results:empty {
+  display: none;
+}
+
+.search-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background: var(--border);
+}
+
+.search-result-item__name {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.search-result-item__detail {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* --- Place card (inside Leaflet popups, shown when tapping a search
+     result or a spot on the map) --- */
+.place-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.place-card__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.place-card__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.place-card__actions button {
+  flex: 1;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.place-card__actions .place-card__go {
+  background: var(--color-orange);
+  color: #4a2a05;
+  border-color: transparent;
+  font-weight: 500;
+}
+
+.nav-banner__cancel {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  padding: 4px;
+}
+
+.nav-banner__cancel:hover {
+  color: var(--text);
+}
+
+.place-item {
+  position: relative;
+}
+
+.place-item__delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.place-item__delete:hover {
+  color: #c0392b;
+}

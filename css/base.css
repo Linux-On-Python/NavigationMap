@@ -1,0 +1,59 @@
+/*
+  base.css
+  --------
+  Reset, typography, and the top-level layout grid (header + map + panel).
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s ease, color 0.2s ease;
+  overflow: hidden; /* app shell manages its own scroll regions */
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* App shell: header on top, main content fills the rest of the viewport.
+   Works for phone, tablet, desktop, and car infotainment browsers, which
+   are typically wide but short — hence min-height:0 so children can
+   shrink and scroll internally instead of overflowing the screen. */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport height: avoids mobile browser chrome jumps */
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* Below this width (portrait phones), stack the panel under the map
+   instead of beside it. Above it (tablet, desktop, car displays), the
+   side panel sits to the right, matching the layout we designed for. */
+@media (max-width: 640px) {
+  .app-main {
+    flex-direction: column;
+  }
+}

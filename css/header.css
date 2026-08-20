@@ -1,0 +1,74 @@
+/*
+  header.css
+  ----------
+  Top bar: hamburger menu button, RouteSync logo/name, dark/light toggle.
+*/
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--panel);
+  border-bottom: 0.5px solid var(--border);
+  position: relative; /* anchors the hamburger dropdown menu */
+  z-index: 20;
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: background 0.15s ease;
+}
+
+.icon-button:hover {
+  background: var(--border);
+}
+
+.icon-button:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+/* Hamburger button is square-ish with slightly smaller radius than the
+   circular theme toggle, so the two don't read as the same control. */
+#menu-toggle {
+  border-radius: var(--radius-sm);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.logo__mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--color-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a2a05;
+  flex-shrink: 0;
+}
+
+.logo__name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RouteMap</title>
+  <meta name="description" content="RouteSync — a minimalist errand-routing PWA with turn-by-turn voice guidance." />
+
+  <!-- PWA setup: installable + themed browser chrome -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f4a036" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+
+  <!-- Leaflet (free, open-source map library — no API key required) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Stylesheets, loaded in dependency order: tokens first, then layout,
+       then each component. Keeping them split makes it easy to find and
+       edit one piece (e.g. just the side panel) without touching others. -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/map.css" />
+  <link rel="stylesheet" href="css/panel.css" />
+  <link rel="stylesheet" href="css/menu.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- ============ HEADER ============ -->
+    <header class="app-header">
+      <div class="app-header__left">
+        <!-- Hamburger: opens the dropdown menu (History / Offline maps / Voice preferences / About) -->
+        <button id="menu-toggle" class="icon-button" aria-label="Open menu" aria-expanded="false" aria-controls="hamburger-menu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
+        <div class="logo">
+          <span class="logo__mark" aria-hidden="true">
+            <!-- Simple route/path glyph standing in for the app icon -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="6" cy="19" r="2" />
+              <circle cx="18" cy="5" r="2" />
+              <path d="M8 19h6a4 4 0 0 0 4-4V9a4 4 0 0 0-4-4h-2" />
+            </svg>
+          </span>
+          <span class="logo__name">RouteSync</span>
+        </div>
+      </div>
+
+      <!-- Manual theme override; defaults to the system preference (see js/theme.js) -->
+      <button id="theme-toggle" class="icon-button" aria-label="Toggle dark mode">
+        <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- ============ HAMBURGER DROPDOWN MENU ============ -->
+    <!-- Hidden by default; js/menu.js toggles the "is-open" class.
+         Each item swaps content into <main> rather than navigating to a
+         separate page, so an in-progress route is never interrupted. -->
+    <nav id="hamburger-menu" class="hamburger-menu" aria-label="App menu">
+      <button class="hamburger-menu__item" data-screen="history">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+        <span>History</span>
+      </button>
+      <button class="hamburger-menu__item" data-screen="offline-maps">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4l6 3 6-3v14l-6 3-6-3-6 3V7z" /><path d="M9 4v14M15 7v14" /></svg>
+        <span>Offline maps</span>
+      </button>
+      <button class="hamburger-menu__item" data-screen="voice-preferences">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10a7 7 0 0 0 14 0M12 19v3" /></svg>
+        <span>Voice preferences</span>
+      </button>
+      <button class="hamburger-menu__item" data-screen="about">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+        <span>About</span>
+      </button>
+    </nav>
+
+    <!-- ============ MAIN: MAP + SIDE PANEL ============ -->
+    <main class="app-main">
+
+      <!-- MAP -->
+      <section class="map-container" aria-label="Map">
+        <!-- Leaflet mounts here (js/map.js). The text below is only ever
+             seen for a moment while the browser gets a location fix, or
+             if location access is denied — it's replaced by real tiles. -->
+        <div id="map">
+          <p id="map-status" class="map-status">Finding your location…</p>
+        </div>
+
+        <!-- Turn-by-turn instruction banner, shown only while navigating -->
+        <div id="nav-banner" class="nav-banner">
+          <div class="nav-banner__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 14l-4-4 4-4" /><path d="M5 10h9a5 5 0 0 1 5 5v1" />
+            </svg>
+          </div>
+          <div class="nav-banner__text">
+            <!-- Empty until navigation.js starts a real trip and fills these
+                 in with the actual next turn instruction and street name -->
+            <div id="nav-instruction" class="nav-banner__instruction"></div>
+            <div id="nav-street" class="nav-banner__street"></div>
+          </div>
+          <button id="nav-mute" class="nav-banner__mute" aria-label="Mute voice guidance">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.5 8.5a5 5 0 0 1 0 7" />
+            </svg>
+          </button>
+          <button id="nav-cancel" class="nav-banner__cancel" aria-label="Cancel navigation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Zoom controls (Leaflet has its own, but these match our style;
+             wired up to the map instance in js/map.js) -->
+        <div class="map-zoom-controls">
+          <button id="zoom-in" class="icon-button" aria-label="Zoom in">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          </button>
+          <button id="zoom-out" class="icon-button" aria-label="Zoom out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          </button>
+        </div>
+
+        <!-- Shown once a route is previewed (after tapping "Go" on a place
+             card) but before navigation actually begins. "Start trip" is
+             what actually starts turn-by-turn + voice guidance — kept as
+             a separate step from previewing the route. "Cancel" here
+             dismisses the preview without starting anything (different
+             from the Cancel inside the nav banner, which stops an
+             ALREADY-STARTED trip — this one clears a route you decided
+             not to take). -->
+        <div id="route-preview-actions" class="route-preview-actions">
+          <button id="cancel-preview-btn" class="cancel-preview-btn">Cancel</button>
+          <button id="start-trip-btn" class="start-trip-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Start trip
+          </button>
+        </div>
+      </section>
+
+      <!-- SIDE PANEL -->
+      <aside class="side-panel" aria-label="Places and journeys">
+
+        <!-- Search -->
+        <div class="search-box">
+          <svg class="search-box__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input id="destination-search" type="text" placeholder="Where to next?" aria-label="Search for a destination" />
+        </div>
+
+        <!-- Multiple matching results appear here after pressing Enter,
+             like Google Maps' search suggestions. Empty/hidden otherwise.
+             Populated entirely by js/routing.js. -->
+        <ul id="search-results" class="search-results"></ul>
+
+        <!-- Recent journeys: max 3, most recent first. Rendered entirely
+             by js/journeys.js from real trip history in storage — empty
+             until the person actually navigates somewhere. -->
+        <div class="panel-section">
+          <h2 class="panel-section__title">Recent journeys</h2>
+          <ul id="recent-journeys-list" class="journey-list">
+            <!-- js/journeys.js injects <li class="journey-item"> here,
+                 or an .empty-state message when there's no history yet -->
+          </ul>
+        </div>
+
+        <!-- Saved places: favorite / want-to-visit / custom category, each
+             tagged with a Sonic-ring-style icon badge. Rendered by
+             js/places.js from real saved data — empty until the person
+             adds their own places (e.g. taps "Add place" or saves a spot
+             from the map). -->
+        <div class="panel-section panel-section--bordered">
+          <h2 class="panel-section__title">Saved places</h2>
+          <ul id="saved-places-list" class="place-list">
+            <!-- js/places.js injects <li class="place-item"> here,
+                 or an .empty-state message when nothing is saved yet -->
+          </ul>
+          <button id="add-place-btn" class="add-place-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            Add place
+          </button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Leaflet (free, open-source map library — no API key required) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Our modules, plain ES modules (type="module") so each file only
+       exports what other files need — no bundler required, which keeps
+       this a zero-build, zero-cost, host-anywhere static site.
+       storage.js has no dependents listed below because every other
+       module imports it directly, not through app.js. -->
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/menu.js"></script>
+  <script type="module" src="js/map.js"></script>
+  <script type="module" src="js/voice.js"></script>
+  <script type="module" src="js/navigation.js"></script>
+  <script type="module" src="js/routing.js"></script>
+  <script type="module" src="js/places.js"></script>
+  <script type="module" src="js/journeys.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>

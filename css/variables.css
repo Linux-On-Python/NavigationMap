@@ -1,0 +1,71 @@
+/*
+  variables.css
+  -------------
+  Central color + spacing tokens for RouteSync.
+  Light mode is the default; dark mode is applied automatically based on
+  the user's OS preference (prefers-color-scheme), and can be overridden
+  manually via the [data-theme] attribute set by js/theme.js.
+*/
+
+:root {
+  /* --- Brand accents (Tails palette, used sparingly) --- */
+  --color-orange: #f4a036;        /* primary accent: route line, primary buttons, Tails marker */
+  --color-orange-dark: #c97b1e;   /* text/icons on top of orange, or orange text on light bg */
+  --color-blue: #4fc3f7;          /* secondary accent: "want to visit" places, current-location dot */
+  --color-blue-dark: #1d7fa3;
+  --color-ring: #f4c93a;          /* favorite-place badge (Sonic ring) */
+  --color-ring-dark: #8a6d06;
+
+  /* --- Light mode surface tokens --- */
+  --bg: #faf9f6;
+  --panel: #ffffff;
+  --map-bg: #efede6;
+  --border: #e5e3dc;
+  --text: #1a1a1a;
+  --text-secondary: #6b6b66;
+
+  /* --- Spacing scale --- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+
+  /* --- Radius / shadow --- */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --shadow-menu: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Automatic dark mode: respects OS/browser preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14181d;
+    --panel: #1c2127;
+    --map-bg: #1a1f25;
+    --border: #2b3138;
+    --text: #f2f1ed;
+    --text-secondary: #9b9e9f;
+  }
+}
+
+/* Manual override: js/theme.js sets data-theme="light" or "dark" on <html>
+   when the user taps the toggle. These win over the OS preference above. */
+html[data-theme="light"] {
+  --bg: #faf9f6;
+  --panel: #ffffff;
+  --map-bg: #efede6;
+  --border: #e5e3dc;
+  --text: #1a1a1a;
+  --text-secondary: #6b6b66;
+}
+
+html[data-theme="dark"] {
+  --bg: #14181d;
+  --panel: #1c2127;
+  --map-bg: #1a1f25;
+  --border: #2b3138;
+  --text: #f2f1ed;
+  --text-secondary: #9b9e9f;
+}

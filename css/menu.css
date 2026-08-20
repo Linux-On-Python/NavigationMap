@@ -1,0 +1,53 @@
+/*
+  menu.css
+  --------
+  The hamburger dropdown menu (History / Offline maps / Voice preferences / About).
+  Anchored under the hamburger button in the header; js/menu.js toggles
+  the "is-open" class and handles closing on outside click / Escape.
+*/
+
+.hamburger-menu {
+  display: none;
+  position: absolute;
+  top: 56px;
+  left: var(--space-md);
+  width: 200px;
+  background: var(--panel);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-menu);
+  z-index: 30;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.hamburger-menu.is-open {
+  display: flex;
+}
+
+.hamburger-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  width: 100%;
+}
+
+.hamburger-menu__item:last-child {
+  border-bottom: none;
+}
+
+.hamburger-menu__item:hover {
+  background: var(--bg);
+}
+
+.hamburger-menu__item svg {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
